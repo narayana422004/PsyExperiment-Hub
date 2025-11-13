@@ -1,0 +1,1450 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PsyExperiment Hub - Web-Based Cognitive Psychology Experiments</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen', 'Ubuntu', 'Cantarell', sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+            color: #1f2937;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            color: white;
+            margin-bottom: 40px;
+            animation: fadeIn 0.6s ease-in;
+        }
+
+        header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        header p {
+            font-size: 1.1em;
+            opacity: 0.95;
+        }
+
+        .card {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.15);
+            margin-bottom: 20px;
+            animation: slideUp 0.6s ease-out;
+        }
+
+        .experiment-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-top: 30px;
+        }
+
+        .experiment-card {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.1);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: 2px solid transparent;
+        }
+
+        .experiment-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 15px 40px rgba(0,0,0,0.2);
+            border-color: #667eea;
+        }
+
+        .experiment-card h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+            font-size: 1.3em;
+        }
+
+        .experiment-card p {
+            color: #6b7280;
+            font-size: 0.95em;
+            line-height: 1.5;
+            margin-bottom: 15px;
+        }
+
+        .experiment-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+            padding: 10px;
+            background: #f3f4f6;
+            border-radius: 8px;
+        }
+
+        .duration, .difficulty {
+            font-size: 0.85em;
+            font-weight: 600;
+            color: #667eea;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        button:hover {
+            transform: scale(1.02);
+            box-shadow: 0 5px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: scale(0.98);
+        }
+
+        .back-button {
+            background: #6b7280;
+            width: auto;
+            margin-bottom: 20px;
+        }
+
+        .back-button:hover {
+            background: #4b5563;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .consent-form {
+            background: #f9fafb;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 20px 0;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+
+        .consent-form h3 {
+            color: #667eea;
+            margin-top: 15px;
+            margin-bottom: 10px;
+        }
+
+        .consent-form p {
+            color: #6b7280;
+            line-height: 1.6;
+            margin-bottom: 10px;
+            font-size: 0.95em;
+        }
+
+        .checkbox-group {
+            margin: 20px 0;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 20px;
+            height: 20px;
+            margin-right: 10px;
+            cursor: pointer;
+        }
+
+        .form-group {
+            margin: 15px 0;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .form-group select,
+        .form-group input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 1em;
+        }
+
+        .form-group select:focus,
+        .form-group input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .experiment-container {
+            text-align: center;
+            padding: 40px 20px;
+        }
+
+        .experiment-content {
+            background: white;
+            padding: 40px;
+            border-radius: 12px;
+            min-height: 500px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .stimulus {
+            font-size: 3em;
+            font-weight: bold;
+            margin: 30px 0;
+            min-height: 100px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #e5e7eb;
+            padding: 30px;
+            border-radius: 12px;
+            background: #f9fafb;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e5e7eb;
+            border-radius: 4px;
+            margin: 20px 0;
+            overflow: hidden;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            width: 0%;
+            transition: width 0.3s ease;
+        }
+
+        .trial-info {
+            font-size: 1.1em;
+            color: #6b7280;
+            margin: 20px 0;
+        }
+
+        .instructions {
+            background: #eff6ff;
+            padding: 20px;
+            border-radius: 8px;
+            border-left: 4px solid #667eea;
+            margin: 20px 0;
+            text-align: left;
+        }
+
+        .instructions h3 {
+            color: #667eea;
+            margin-bottom: 10px;
+        }
+
+        .instructions p {
+            color: #1e40af;
+            line-height: 1.6;
+        }
+
+        .instructions ul {
+            list-style-position: inside;
+            color: #1e40af;
+            margin: 10px 0;
+        }
+
+        .key-response {
+            font-size: 2em;
+            margin: 20px 0;
+            color: #667eea;
+            font-weight: bold;
+        }
+
+        .feedback {
+            font-size: 1.5em;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 20px 0;
+            font-weight: bold;
+        }
+
+        .feedback.correct {
+            background: #d1fae5;
+            color: #065f46;
+        }
+
+        .feedback.incorrect {
+            background: #fee2e2;
+            color: #7f1d1d;
+        }
+
+        .results-container {
+            background: white;
+            border-radius: 12px;
+            padding: 30px;
+        }
+
+        .results-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .stat-box {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-box .label {
+            font-size: 0.9em;
+            opacity: 0.9;
+            margin-bottom: 10px;
+        }
+
+        .stat-box .value {
+            font-size: 2em;
+            font-weight: bold;
+        }
+
+        .chart-container {
+            margin: 30px 0;
+            padding: 20px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            background: white;
+        }
+
+        .data-table th,
+        .data-table td {
+            padding: 12px;
+            text-align: left;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        .data-table th {
+            background: #f3f4f6;
+            font-weight: 600;
+            color: #374151;
+        }
+
+        .data-table tr:hover {
+            background: #f9fafb;
+        }
+
+        .export-buttons {
+            display: flex;
+            gap: 10px;
+            margin: 20px 0;
+            flex-wrap: wrap;
+        }
+
+        .export-btn {
+            flex: 1;
+            min-width: 150px;
+        }
+
+        canvas {
+            max-width: 100%;
+            margin: 20px 0;
+        }
+
+        .withdraw-button {
+            background: #ef4444;
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 10px 20px;
+            font-size: 0.9em;
+            z-index: 1000;
+        }
+
+        .withdraw-button:hover {
+            background: #dc2626;
+        }
+
+        .screen {
+            animation: fadeIn 0.3s ease-in;
+        }
+
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+            }
+            to {
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideUp {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .visual-grid {
+            display: grid;
+            grid-template-columns: repeat(5, 1fr);
+            gap: 15px;
+            width: 100%;
+            max-width: 400px;
+            margin: 30px auto;
+        }
+
+        .grid-item {
+            width: 60px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 8px;
+            font-size: 2em;
+            cursor: default;
+            background: #f3f4f6;
+            transition: all 0.1s;
+        }
+
+        .grid-item.target {
+            background: #fbbf24;
+            border: 3px solid #f59e0b;
+        }
+
+        .grid-item.distractor {
+            background: #e5e7eb;
+        }
+
+        @media (max-width: 768px) {
+            header h1 {
+                font-size: 1.8em;
+            }
+
+            .experiment-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .experiment-content {
+                padding: 20px;
+            }
+
+            .stimulus {
+                font-size: 2em;
+            }
+
+            .withdraw-button {
+                width: auto;
+                padding: 8px 15px;
+                font-size: 0.8em;
+                top: 10px;
+                right: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HOME SCREEN -->
+        <div id="homeScreen" class="screen">
+            <header>
+                <h1>🧠 PsyExperiment Hub</h1>
+                <p>Web-Based Cognitive Psychology Experiments</p>
+            </header>
+
+            <div class="card">
+                <h2>Welcome to PsyExperiment Hub</h2>
+                <p>This platform enables cutting-edge cognitive science research on the web with millisecond-accurate timing and diverse participant populations.</p>
+                <p><strong>Key Features:</strong></p>
+                <ul style="margin-left: 20px; margin-top: 10px;">
+                    <li>✓ Millisecond-accurate timing using requestAnimationFrame</li>
+                    <li>✓ GDPR-compliant data collection</li>
+                    <li>✓ Three ready-to-use experiment templates</li>
+                    <li>✓ Real-time data visualization</li>
+                    <li>✓ Anonymous participant tracking</li>
+                    <li>✓ Easy CSV/JSON export</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 30px;">
+                <button onclick="showExperimentSelect()" style="max-width: 400px;">
+                    Start an Experiment →
+                </button>
+            </div>
+        </div>
+
+        <!-- EXPERIMENT SELECTION -->
+        <div id="experimentSelectScreen" class="screen hidden">
+            <button class="back-button" onclick="showHome()">← Back to Home</button>
+
+            <div class="card">
+                <h2>Select an Experiment</h2>
+                <p>Choose one of our three ready-to-use experiment templates:</p>
+            </div>
+
+            <div class="experiment-grid">
+                <!-- STROOP TASK -->
+                <div class="experiment-card" onclick="selectExperiment('stroop')">
+                    <h3>Stroop Color-Word Task</h3>
+                    <p>Identify the ink color of words (ignore the word meaning).</p>
+                    <div class="experiment-meta">
+                        <span class="duration">⏱ ~5 min</span>
+                        <span class="difficulty">⚡ Easy-Moderate</span>
+                    </div>
+                    <p style="font-size: 0.85em; color: #9ca3af; margin-bottom: 10px;">Tests cognitive control and response inhibition</p>
+                    <button>Start Stroop Task</button>
+                </div>
+
+                <!-- VISUAL SEARCH -->
+                <div class="experiment-card" onclick="selectExperiment('visualsearch')">
+                    <h3>Visual Search Task</h3>
+                    <p>Find the target item in a grid of distractors.</p>
+                    <div class="experiment-meta">
+                        <span class="duration">⏱ ~7 min</span>
+                        <span class="difficulty">⚡ Moderate</span>
+                    </div>
+                    <p style="font-size: 0.85em; color: #9ca3af; margin-bottom: 10px;">Measures attention and visual processing efficiency</p>
+                    <button>Start Visual Search</button>
+                </div>
+
+                <!-- N-BACK -->
+                <div class="experiment-card" onclick="selectExperiment('nback')">
+                    <h3>N-Back Working Memory Task</h3>
+                    <p>Match current letter to the one 2 positions back.</p>
+                    <div class="experiment-meta">
+                        <span class="duration">⏱ ~4 min</span>
+                        <span class="difficulty">⚡ Moderate-Hard</span>
+                    </div>
+                    <p style="font-size: 0.85em; color: #9ca3af; margin-bottom: 10px;">Assesses working memory and sustained attention</p>
+                    <button>Start N-Back Task</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- CONSENT SCREEN -->
+        <div id="consentScreen" class="screen hidden">
+            <button class="back-button" onclick="showExperimentSelect()">← Back</button>
+
+            <div class="card">
+                <h2>Research Consent Form</h2>
+
+                <div class="consent-form">
+                    <h3>Purpose of Study</h3>
+                    <p>This research examines cognitive processes including attention, working memory, and processing speed through computerized tasks. Your participation helps advance our understanding of human cognition and enables scientific research to reach more diverse populations.</p>
+
+                    <h3>What You Will Do</h3>
+                    <p>You will complete a series of cognitive tasks that take approximately 4-7 minutes. You will respond to stimuli on your computer screen by pressing keys. There are no right or wrong answers—we're interested in how your brain processes information naturally.</p>
+
+                    <h3>Your Data & Privacy</h3>
+                    <p>Your data will be collected <strong>anonymously</strong> using a random participant ID. We do not collect:</p>
+                    <ul style="margin-left: 20px;">
+                        <li>Your IP address</li>
+                        <li>Identifying personal information</li>
+                        <li>Tracking cookies</li>
+                        <li>Location data</li>
+                    </ul>
+                    <p>Your responses are stored securely and handled in compliance with GDPR and international privacy standards.</p>
+
+                    <h3>Your Rights</h3>
+                    <p><strong>You may withdraw at any time without penalty.</strong> You have the right to:</p>
+                    <ul style="margin-left: 20px;">
+                        <li>Stop the experiment anytime by clicking "Withdraw"</li>
+                        <li>Skip demographic questions</li>
+                        <li>Request deletion of your data</li>
+                        <li>Ask questions about the study</li>
+                    </ul>
+
+                    <h3>Potential Risks</h3>
+                    <p>This study involves minimal risk. The tasks are simple cognitive exercises similar to casual games. You may experience minor eye strain or fatigue.</p>
+
+                    <h3>Contact Information</h3>
+                    <p>Questions about this study? Contact: <strong>research@psyexperiment.hub</strong></p>
+                </div>
+
+                <div class="checkbox-group">
+                    <label>
+                        <input type="checkbox" id="consentCheckbox">
+                        <span>I have read and understand this consent form. I agree to participate in this research and understand that my data will be collected anonymously and handled securely.</span>
+                    </label>
+                </div>
+
+                <button onclick="proceedToDemographics()" id="consentButton" style="opacity: 0.5; cursor: not-allowed;">
+                    Continue to Experiment →
+                </button>
+            </div>
+        </div>
+
+        <!-- DEMOGRAPHICS SCREEN -->
+        <div id="demographicsScreen" class="screen hidden">
+            <button class="back-button" onclick="showExperimentSelect()">← Back</button>
+
+            <div class="card">
+                <h2>Optional Demographics</h2>
+                <p>Providing this information helps us ensure diverse participant representation. All information is optional and anonymous.</p>
+
+                <form id="demographicsForm">
+                    <div class="form-group">
+                        <label>Age Range (Optional)</label>
+                        <select id="ageRange">
+                            <option value="">-- Select Age Range --</option>
+                            <option value="18-25">18-25</option>
+                            <option value="26-35">26-35</option>
+                            <option value="36-50">36-50</option>
+                            <option value="51-65">51-65</option>
+                            <option value="65+">65+</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Gender Identity (Optional)</label>
+                        <select id="gender">
+                            <option value="">-- Select Gender --</option>
+                            <option value="male">Male</option>
+                            <option value="female">Female</option>
+                            <option value="non-binary">Non-binary</option>
+                            <option value="other">Other</option>
+                            <option value="prefer-not">Prefer not to say</option>
+                        </select>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Country of Residence (Optional)</label>
+                        <input type="text" id="country" placeholder="e.g., United States">
+                    </div>
+                </form>
+
+                <button onclick="startExperiment()">
+                    Start Experiment →
+                </button>
+            </div>
+        </div>
+
+        <!-- INSTRUCTIONS SCREEN -->
+        <div id="instructionsScreen" class="screen hidden">
+            <button class="back-button" onclick="showExperimentSelect()">← Back</button>
+
+            <div class="experiment-container">
+                <div class="experiment-content">
+                    <h2>Instructions</h2>
+                    <div id="instructionsContent" class="instructions"></div>
+
+                    <div style="margin-top: 30px; width: 100%; max-width: 400px;">
+                        <p style="color: #6b7280; margin-bottom: 15px;">Click below to proceed to practice trials:</p>
+                        <button onclick="startPractice()">Begin Practice Trials →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- EXPERIMENT SCREEN -->
+        <div id="experimentScreen" class="screen hidden">
+            <button class="withdraw-button" onclick="withdrawExperiment()">Withdraw</button>
+
+            <div class="experiment-container">
+                <div class="experiment-content">
+                    <div class="trial-info">
+                        <span id="trialDisplay">Trial 1 / 20</span>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="progressFill"></div>
+                        </div>
+                    </div>
+
+                    <div id="experimentContent"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- RESULTS SCREEN -->
+        <div id="resultsScreen" class="screen hidden">
+            <button class="back-button" onclick="showHome()">← Back to Home</button>
+
+            <div class="results-container">
+                <h2>Your Results</h2>
+
+                <div class="results-stats" id="resultsStats"></div>
+
+                <div class="chart-container">
+                    <h3>Reaction Time Across Trials</h3>
+                    <canvas id="rtChart"></canvas>
+                </div>
+
+                <div class="chart-container">
+                    <h3>Accuracy Breakdown</h3>
+                    <canvas id="accuracyChart"></canvas>
+                </div>
+
+                <h3>Trial-by-Trial Data</h3>
+                <table class="data-table" id="resultsTable"></table>
+
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="downloadCSV()">📥 Download as CSV</button>
+                    <button class="export-btn" onclick="downloadJSON()">📥 Download as JSON</button>
+                </div>
+
+                <div class="card">
+                    <h3>About Your Results</h3>
+                    <p><strong>Mean Reaction Time:</strong> Average time taken to respond across all trials.</p>
+                    <p><strong>Accuracy:</strong> Percentage of trials answered correctly.</p>
+                    <p><strong>Standard Deviation:</strong> Variability in your reaction times (lower = more consistent).</p>
+                    <p style="margin-top: 15px; font-size: 0.9em; color: #6b7280;">Thank you for participating! Your data helps advance cognitive science. If you have questions about this study, contact research@psyexperiment.hub</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // ============================================
+        // GLOBAL STATE & CONFIGURATION
+        // ============================================
+        let appState = {
+            currentScreen: 'home',
+            currentExperiment: null,
+            participantId: generateParticipantId(),
+            demographics: {},
+            trials: [],
+            currentTrialIndex: 0,
+            isPractice: true,
+            experimentStartTime: null,
+            trialStartTime: null,
+            experimentConfig: {}
+        };
+
+        const experimentConfigs = {
+            stroop: {
+                name: 'Stroop Color-Word Task',
+                practiceTrials: 5,
+                mainTrials: 20,
+                stimulusDuration: 2000,
+                generateStimuli: generateStroopStimuli
+            },
+            visualsearch: {
+                name: 'Visual Search Task',
+                practiceTrials: 4,
+                mainTrials: 20,
+                setSizes: [5, 10, 15],
+                trialsPerSize: 4,
+                generateStimuli: generateVisualSearchStimuli
+            },
+            nback: {
+                name: 'N-Back Working Memory Task',
+                practiceTrials: 5,
+                mainTrials: 20,
+                nLevel: 2,
+                stimulusDuration: 1000,
+                blankDuration: 2000,
+                generateStimuli: generateNBackStimuli
+            }
+        };
+
+        // ============================================
+        // UTILITY FUNCTIONS
+        // ============================================
+
+        function generateParticipantId() {
+            const timestamp = Date.now();
+            const random = Math.random().toString(36).substring(2, 9);
+            return `p_${btoa(timestamp + random).substring(0, 12)}`.toLowerCase();
+        }
+
+        function showScreen(screenId) {
+            document.querySelectorAll('.screen').forEach(s => s.classList.add('hidden'));
+            document.getElementById(screenId).classList.remove('hidden');
+            appState.currentScreen = screenId;
+        }
+
+        function showHome() {
+            appState = {
+                currentScreen: 'home',
+                currentExperiment: null,
+                participantId: generateParticipantId(),
+                demographics: {},
+                trials: [],
+                currentTrialIndex: 0,
+                isPractice: true,
+                experimentStartTime: null,
+                trialStartTime: null,
+                experimentConfig: {}
+            };
+            showScreen('homeScreen');
+        }
+
+        function showExperimentSelect() {
+            showScreen('experimentSelectScreen');
+        }
+
+        function selectExperiment(experimentType) {
+            appState.currentExperiment = experimentType;
+            appState.experimentConfig = experimentConfigs[experimentType];
+            showScreen('consentScreen');
+            document.getElementById('consentCheckbox').checked = false;
+            updateConsentButton();
+        }
+
+        function updateConsentButton() {
+            const btn = document.getElementById('consentButton');
+            if (document.getElementById('consentCheckbox').checked) {
+                btn.style.opacity = '1';
+                btn.style.cursor = 'pointer';
+            } else {
+                btn.style.opacity = '0.5';
+                btn.style.cursor = 'not-allowed';
+            }
+        }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            document.getElementById('consentCheckbox').addEventListener('change', updateConsentButton);
+        });
+
+        function proceedToDemographics() {
+            if (!document.getElementById('consentCheckbox').checked) return;
+            showScreen('demographicsScreen');
+        }
+
+        function startExperiment() {
+            appState.demographics = {
+                ageRange: document.getElementById('ageRange').value || 'not-provided',
+                gender: document.getElementById('gender').value || 'not-provided',
+                country: document.getElementById('country').value || 'not-provided'
+            };
+
+            // Show instructions
+            const instructions = getExperimentInstructions();
+            document.getElementById('instructionsContent').innerHTML = instructions;
+            showScreen('instructionsScreen');
+        }
+
+        function getExperimentInstructions() {
+            const instructions = {
+                stroop: `
+                    <h3>Stroop Color-Word Task</h3>
+                    <p>You will see color words (RED, BLUE, GREEN, YELLOW) displayed in different ink colors.</p>
+                    <p><strong>Your task:</strong> Press the first letter of the INK COLOR you see (not the word).</p>
+                    <p style="margin-top: 15px;"><strong>Example:</strong></p>
+                    <p>If you see the word "RED" printed in blue ink:</p>
+                    <ul style="margin: 10px 0;">
+                        <li>Press <strong>B</strong> (for BLUE - the ink color)</li>
+                        <li>Do NOT press R (the word itself)</li>
+                    </ul>
+                    <p style="margin-top: 15px;"><strong>Key mapping:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li><strong>R</strong> = RED ink</li>
+                        <li><strong>B</strong> = BLUE ink</li>
+                        <li><strong>G</strong> = GREEN ink</li>
+                        <li><strong>Y</strong> = YELLOW ink</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #10b981;"><strong>Respond as quickly and accurately as possible!</strong></p>
+                `,
+                visualsearch: `
+                    <h3>Visual Search Task</h3>
+                    <p>You will see a grid of items. Your task is to find the TARGET item (usually a different color/shape).</p>
+                    <p><strong>Target:</strong> Yellow/Gold circle (highlighted)</p>
+                    <p><strong>Distractors:</strong> Gray circles</p>
+                    <p style="margin-top: 15px;"><strong>Your task:</strong> Press <strong>SPACE</strong> as soon as you find the target.</p>
+                    <p style="margin-top: 15px;">The difficulty will increase as grids get larger (5 → 10 → 15 items).</p>
+                    <p style="margin-top: 15px; color: #10b981;"><strong>Respond as quickly and accurately as possible!</strong></p>
+                `,
+                nback: `
+                    <h3>N-Back Working Memory Task</h3>
+                    <p>You will see a sequence of letters appear one at a time on the screen.</p>
+                    <p><strong>Your task:</strong> Press <strong>SPACE</strong> when the current letter matches the letter from <strong>2 positions back</strong>.</p>
+                    <p style="margin-top: 15px;"><strong>Example sequence:</strong></p>
+                    <p>A → B → <strong>A</strong> (press SPACE!) → C → <strong>B</strong> (press SPACE!) → A → ...</p>
+                    <p style="margin-top: 15px;"><strong>Timing:</strong></p>
+                    <ul style="margin: 10px 0;">
+                        <li>Each letter appears for 1 second</li>
+                        <li>Then 2 seconds of blank screen</li>
+                        <li>Then next letter appears</li>
+                    </ul>
+                    <p style="margin-top: 15px; color: #10b981;"><strong>Stay focused and respond when you see a match!</strong></p>
+                `
+            };
+            return instructions[appState.currentExperiment];
+        }
+
+        function startPractice() {
+            appState.isPractice = true;
+            appState.currentTrialIndex = 0;
+            appState.trials = [];
+            appState.experimentConfig.generateStimuli();
+            appState.experimentStartTime = performance.now();
+            showScreen('experimentScreen');
+            presentNextTrial();
+        }
+
+        function startMainExperiment() {
+            appState.isPractice = false;
+            appState.currentTrialIndex = 0;
+            appState.trials = [];
+            appState.experimentConfig.generateStimuli();
+            appState.experimentStartTime = performance.now();
+            showScreen('experimentScreen');
+            presentNextTrial();
+        }
+
+        function presentNextTrial() {
+            const totalTrials = appState.isPractice ? 
+                appState.experimentConfig.practiceTrials : 
+                appState.experimentConfig.mainTrials;
+
+            if (appState.currentTrialIndex >= totalTrials) {
+                if (appState.isPractice) {
+                    showPracticeComplete();
+                } else {
+                    showResults();
+                }
+                return;
+            }
+
+            const trial = appState.trials[appState.currentTrialIndex];
+            const progressPercent = ((appState.currentTrialIndex + 1) / totalTrials) * 100;
+            document.getElementById('progressFill').style.width = progressPercent + '%';
+
+            const trialLabel = appState.isPractice ? `Practice ${appState.currentTrialIndex + 1}` : `Trial ${appState.currentTrialIndex + 1}`;
+            document.getElementById('trialDisplay').textContent = `${trialLabel} / ${totalTrials}`;
+
+            renderTrial(trial);
+        }
+
+        function renderTrial(trial) {
+            const content = document.getElementById('experimentContent');
+
+            if (appState.currentExperiment === 'stroop') {
+                renderStroopTrial(trial, content);
+            } else if (appState.currentExperiment === 'visualsearch') {
+                renderVisualSearchTrial(trial, content);
+            } else if (appState.currentExperiment === 'nback') {
+                renderNBackTrial(trial, content);
+            }
+        }
+
+        // ============================================
+        // STROOP EXPERIMENT
+        // ============================================
+
+        function generateStroopStimuli() {
+            const colors = ['RED', 'BLUE', 'GREEN', 'YELLOW'];
+            const colorMap = {
+                'RED': '#ef4444',
+                'BLUE': '#3b82f6',
+                'GREEN': '#22c55e',
+                'YELLOW': '#eab308'
+            };
+
+            appState.trials = [];
+
+            for (let i = 0; i < appState.experimentConfig.mainTrials; i++) {
+                const wordColor = colors[Math.floor(Math.random() * colors.length)];
+                const displayColor = colors[Math.floor(Math.random() * colors.length)];
+                const isCongruent = wordColor === displayColor;
+
+                appState.trials.push({
+                    type: 'stroop',
+                    word: wordColor,
+                    displayColor: colorMap[displayColor],
+                    correctResponse: displayColor[0].toLowerCase(),
+                    isCongruent: isCongruent,
+                    stimulus: `${wordColor} (${displayColor})`,
+                    response: null,
+                    reactionTime: null,
+                    accuracy: null
+                });
+            }
+        }
+
+        function renderStroopTrial(trial, content) {
+            content.innerHTML = `
+                <div style="margin: 30px 0;">
+                    <p style="color: #6b7280; margin-bottom: 30px;">Press the first letter of the INK COLOR (R/B/G/Y)</p>
+                    <div class="stimulus" style="color: ${trial.displayColor}; font-size: 4em;">
+                        ${trial.word}
+                    </div>
+                    <p style="color: #9ca3af; font-size: 0.9em; margin-top: 20px;">Respond as quickly as possible</p>
+                </div>
+            `;
+
+            appState.trialStartTime = performance.now();
+
+            document.addEventListener('keydown', handleStroopResponse, { once: true });
+        }
+
+        function handleStroopResponse(e) {
+            const key = e.key.toLowerCase();
+            const validKeys = ['r', 'b', 'g', 'y'];
+
+            if (!validKeys.includes(key)) return;
+
+            e.preventDefault();
+
+            const trial = appState.trials[appState.currentTrialIndex];
+            const reactionTime = performance.now() - appState.trialStartTime;
+            const isCorrect = key === trial.correctResponse;
+
+            trial.response = key;
+            trial.reactionTime = reactionTime;
+            trial.accuracy = isCorrect;
+
+            if (appState.isPractice) {
+                showStroopFeedback(isCorrect, reactionTime);
+            } else {
+                nextTrial();
+            }
+        }
+
+        function showStroopFeedback(correct, rt) {
+            const content = document.getElementById('experimentContent');
+            const feedbackClass = correct ? 'correct' : 'incorrect';
+            const feedbackText = correct ? '✓ Correct!' : '✗ Incorrect';
+
+            content.innerHTML = `
+                <div class="feedback ${feedbackClass}">
+                    ${feedbackText}
+                </div>
+                <p style="margin-top: 20px; color: #6b7280;">Reaction Time: ${Math.round(rt)}ms</p>
+            `;
+
+            setTimeout(() => {
+                appState.currentTrialIndex++;
+                presentNextTrial();
+            }, 1500);
+        }
+
+        // ============================================
+        // VISUAL SEARCH EXPERIMENT
+        // ============================================
+
+        function generateVisualSearchStimuli() {
+            appState.trials = [];
+
+            for (const setSize of appState.experimentConfig.setSizes) {
+                for (let i = 0; i < appState.experimentConfig.trialsPerSize; i++) {
+                    const targetPresent = Math.random() > 0.5;
+                    const targetIndex = targetPresent ? Math.floor(Math.random() * setSize) : -1;
+
+                    appState.trials.push({
+                        type: 'visualsearch',
+                        setSize: setSize,
+                        targetPresent: targetPresent,
+                        targetIndex: targetIndex,
+                        items: generateGridItems(setSize, targetIndex),
+                        response: null,
+                        reactionTime: null,
+                        accuracy: null,
+                        stimulus: `Visual Search - Set Size ${setSize}`
+                    });
+                }
+            }
+        }
+
+        function generateGridItems(count, targetIndex) {
+            const items = [];
+            for (let i = 0; i < count; i++) {
+                items.push({
+                    isTarget: i === targetIndex,
+                    symbol: i === targetIndex ? '●' : '○'
+                });
+            }
+            return items;
+        }
+
+        function renderVisualSearchTrial(trial, content) {
+            const gridHTML = trial.items.map((item, idx) => `
+                <div class="grid-item ${item.isTarget ? 'target' : 'distractor'}">
+                    ${item.symbol}
+                </div>
+            `).join('');
+
+            content.innerHTML = `
+                <p style="color: #6b7280; margin-bottom: 20px;">Find the yellow target ● and press SPACE</p>
+                <div class="visual-grid">
+                    ${gridHTML}
+                </div>
+            `;
+
+            appState.trialStartTime = performance.now();
+
+            document.addEventListener('keydown', handleVisualSearchResponse, { once: true });
+        }
+
+        function handleVisualSearchResponse(e) {
+            if (e.code !== 'Space') return;
+
+            e.preventDefault();
+
+            const trial = appState.trials[appState.currentTrialIndex];
+            const reactionTime = performance.now() - appState.trialStartTime;
+            const isCorrect = trial.targetPresent;
+
+            trial.response = 'space';
+            trial.reactionTime = reactionTime;
+            trial.accuracy = isCorrect;
+
+            if (appState.isPractice) {
+                showVisualSearchFeedback(isCorrect, reactionTime);
+            } else {
+                nextTrial();
+            }
+        }
+
+        function showVisualSearchFeedback(correct, rt) {
+            const content = document.getElementById('experimentContent');
+            const feedbackClass = correct ? 'correct' : 'incorrect';
+            const feedbackText = correct ? '✓ Correct!' : '✗ Target not found';
+
+            content.innerHTML = `
+                <div class="feedback ${feedbackClass}">
+                    ${feedbackText}
+                </div>
+                <p style="margin-top: 20px; color: #6b7280;">Reaction Time: ${Math.round(rt)}ms</p>
+            `;
+
+            setTimeout(() => {
+                appState.currentTrialIndex++;
+                presentNextTrial();
+            }, 1500);
+        }
+
+        // ============================================
+        // N-BACK EXPERIMENT
+        // ============================================
+
+        function generateNBackStimuli() {
+            const letters = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H'];
+            appState.trials = [];
+            let previousLetters = [];
+
+            for (let i = 0; i < appState.experimentConfig.mainTrials; i++) {
+                const letter = letters[Math.floor(Math.random() * letters.length)];
+                const nBackLetter = previousLetters[previousLetters.length - 2];
+                const isMatch = letter === nBackLetter && previousLetters.length >= 2;
+
+                appState.trials.push({
+                    type: 'nback',
+                    letter: letter,
+                    isMatch: isMatch,
+                    response: null,
+                    reactionTime: null,
+                    accuracy: null,
+                    stimulus: letter
+                });
+
+                previousLetters.push(letter);
+                if (previousLetters.length > appState.experimentConfig.nLevel) {
+                    previousLetters.shift();
+                }
+            }
+        }
+
+        function renderNBackTrial(trial, content) {
+            content.innerHTML = `
+                <p style="color: #6b7280; margin-bottom: 30px;">Press SPACE when letter matches the one 2 positions back</p>
+                <div class="stimulus" style="font-size: 5em; color: #667eea;">
+                    ${trial.letter}
+                </div>
+                <p style="color: #9ca3af; font-size: 0.9em; margin-top: 20px;">Respond as quickly as possible</p>
+            `;
+
+            appState.trialStartTime = performance.now();
+
+            const timeoutId = setTimeout(() => {
+                // No response recorded - auto advance
+                const trial = appState.trials[appState.currentTrialIndex];
+                trial.accuracy = false;
+                trial.reactionTime = null;
+                nextTrial();
+            }, 1500);
+
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    clearTimeout(timeoutId);
+                    e.preventDefault();
+                    handleNBackResponse(e);
+                }
+            }, { once: true });
+        }
+
+        function handleNBackResponse(e) {
+            const trial = appState.trials[appState.currentTrialIndex];
+            const reactionTime = performance.now() - appState.trialStartTime;
+            const isCorrect = trial.isMatch;
+
+            trial.response = 'space';
+            trial.reactionTime = reactionTime;
+            trial.accuracy = isCorrect;
+
+            nextTrial();
+        }
+
+        function nextTrial() {
+            appState.currentTrialIndex++;
+            presentNextTrial();
+        }
+
+        function showPracticeComplete() {
+            const content = document.getElementById('experimentContent');
+            content.innerHTML = `
+                <div style="text-align: center;">
+                    <h2>✓ Practice Complete!</h2>
+                    <p style="margin: 20px 0; color: #6b7280;">You're ready for the main experiment.</p>
+                    <p style="color: #6b7280; margin-bottom: 30px;">Click below to start the real trials.</p>
+                    <button onclick="startMainExperiment()" style="max-width: 300px;">Begin Main Experiment →</button>
+                </div>
+            `;
+        }
+
+        // ============================================
+        // RESULTS SCREEN
+        // ============================================
+
+        function showResults() {
+            appState.experimentStartTime = performance.now() - appState.experimentStartTime;
+
+            const stats = calculateStats();
+            displayResults(stats);
+            showScreen('resultsScreen');
+        }
+
+        function calculateStats() {
+            const validTrials = appState.trials.filter(t => t.reactionTime !== null && t.reactionTime !== undefined);
+            const rts = validTrials.map(t => t.reactionTime);
+            const accuracies = appState.trials.map(t => t.accuracy ? 1 : 0);
+
+            const meanRT = rts.length > 0 ? rts.reduce((a, b) => a + b) / rts.length : 0;
+            const medianRT = rts.length > 0 ? rts.sort((a, b) => a - b)[Math.floor(rts.length / 2)] : 0;
+            const sdRT = rts.length > 0 ? Math.sqrt(rts.reduce((sq, n) => sq + Math.pow(n - meanRT, 2)) / rts.length) : 0;
+            const accuracy = accuracies.length > 0 ? (accuracies.reduce((a, b) => a + b) / accuracies.length * 100).toFixed(1) : 0;
+
+            return {
+                meanRT: meanRT.toFixed(0),
+                medianRT: medianRT.toFixed(0),
+                sdRT: sdRT.toFixed(0),
+                accuracy: accuracy,
+                trials: appState.trials.length,
+                validTrials: validTrials.length
+            };
+        }
+
+        function displayResults(stats) {
+            const statsHTML = `
+                <div class="stat-box">
+                    <div class="label">Mean Reaction Time</div>
+                    <div class="value">${stats.meanRT}ms</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Median Reaction Time</div>
+                    <div class="value">${stats.medianRT}ms</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Std Deviation</div>
+                    <div class="value">${stats.sdRT}ms</div>
+                </div>
+                <div class="stat-box">
+                    <div class="label">Overall Accuracy</div>
+                    <div class="value">${stats.accuracy}%</div>
+                </div>
+            `;
+
+            document.getElementById('resultsStats').innerHTML = statsHTML;
+
+            // Generate charts
+            generateRTChart();
+            generateAccuracyChart();
+            generateResultsTable();
+        }
+
+        function generateRTChart() {
+            const canvas = document.getElementById('rtChart');
+            const ctx = canvas.getContext('2d');
+            const trials = appState.trials.map((t, i) => i + 1);
+            const rts = appState.trials.map(t => t.reactionTime || 0);
+
+            const maxRT = Math.max(...rts, 1000);
+            const canvasWidth = canvas.width = 600;
+            const canvasHeight = canvas.height = 300;
+            const padding = 50;
+
+            ctx.fillStyle = '#f3f4f6';
+            ctx.fillRect(0, 0, canvasWidth, canvasHeight);
+
+            ctx.strokeStyle = '#d1d5db';
+            ctx.lineWidth = 1;
+            ctx.beginPath();
+            ctx.moveTo(padding, padding);
+            ctx.lineTo(padding, canvasHeight - padding);
+            ctx.lineTo(canvasWidth - padding, canvasHeight - padding);
+            ctx.stroke();
+
+            ctx.strokeStyle = '#667eea';
+            ctx.lineWidth = 2;
+            ctx.beginPath();
+
+            for (let i = 0; i < rts.length; i++) {
+                const x = padding + (i / (rts.length - 1)) * (canvasWidth - 2 * padding);
+                const y = canvasHeight - padding - (rts[i] / maxRT) * (canvasHeight - 2 * padding);
+
+                if (i === 0) {
+                    ctx.moveTo(x, y);
+                } else {
+                    ctx.lineTo(x, y);
+                }
+            }
+            ctx.stroke();
+
+            ctx.fillStyle = '#667eea';
+            for (let i = 0; i < rts.length; i++) {
+                const x = padding + (i / (rts.length - 1)) * (canvasWidth - 2 * padding);
+                const y = canvasHeight - padding - (rts[i] / maxRT) * (canvasHeight - 2 * padding);
+                ctx.fillRect(x - 3, y - 3, 6, 6);
+            }
+        }
+
+        function generateAccuracyChart() {
+            const canvas = document.getElementById('accuracyChart');
+            const ctx = canvas.getContext('2d');
+
+            const correct = appState.trials.filter(t => t.accuracy).length;
+            const incorrect = appState.trials.length - correct;
+
+            const canvasWidth = canvas.width = 300;
+            const canvasHeight = canvas.height = 300;
+            const centerX = canvasWidth / 2;
+            const centerY = canvasHeight / 2;
+            const radius = 100;
+
+            const correctAngle = (correct / appState.trials.length) * Math.PI * 2;
+
+            // Correct slice
+            ctx.fillStyle = '#10b981';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, 0, correctAngle);
+            ctx.closePath();
+            ctx.fill();
+
+            // Incorrect slice
+            ctx.fillStyle = '#ef4444';
+            ctx.beginPath();
+            ctx.moveTo(centerX, centerY);
+            ctx.arc(centerX, centerY, radius, correctAngle, Math.PI * 2);
+            ctx.closePath();
+            ctx.fill();
+
+            // Labels
+            ctx.fillStyle = '#1f2937';
+            ctx.font = 'bold 14px sans-serif';
+            ctx.textAlign = 'center';
+            ctx.fillText(`Correct: ${correct} (${(correct/appState.trials.length*100).toFixed(0)}%)`, centerX, centerY - 130);
+            ctx.fillText(`Incorrect: ${incorrect} (${(incorrect/appState.trials.length*100).toFixed(0)}%)`, centerX, centerY + 150);
+        }
+
+        function generateResultsTable() {
+            const tableBody = document.getElementById('resultsTable');
+            tableBody.innerHTML = '<thead><tr><th>Trial #</th><th>Stimulus</th><th>Response</th><th>RT (ms)</th><th>Accuracy</th></tr></thead><tbody></tbody>';
+
+            const tbody = tableBody.querySelector('tbody');
+
+            appState.trials.slice(0, 20).forEach((trial, idx) => {
+                const row = tbody.insertRow();
+                row.innerHTML = `
+                    <td>${idx + 1}</td>
+                    <td>${trial.stimulus}</td>
+                    <td>${trial.response || '-'}</td>
+                    <td>${trial.reactionTime ? Math.round(trial.reactionTime) : '-'}</td>
+                    <td><span style="color: ${trial.accuracy ? '#10b981' : '#ef4444'}">${trial.accuracy ? '✓' : '✗'}</span></td>
+                `;
+            });
+        }
+
+        function downloadCSV() {
+            let csv = 'TrialNumber,Stimulus,Response,ReactionTime_ms,Accuracy\n';
+
+            appState.trials.forEach((trial, idx) => {
+                csv += `${idx + 1},"${trial.stimulus}","${trial.response || ''}",${trial.reactionTime ? Math.round(trial.reactionTime) : ''},${trial.accuracy ? 'Correct' : 'Incorrect'}\n`;
+            });
+
+            const blob = new Blob([csv], { type: 'text/csv' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${appState.currentExperiment}_${appState.participantId}.csv`;
+            a.click();
+        }
+
+        function downloadJSON() {
+            const data = {
+                participantId: appState.participantId,
+                experiment: appState.currentExperiment,
+                demographics: appState.demographics,
+                experimentMetadata: {
+                    name: appState.experimentConfig.name,
+                    totalTrials: appState.trials.length,
+                    timestamp: new Date().toISOString()
+                },
+                trials: appState.trials
+            };
+
+            const json = JSON.stringify(data, null, 2);
+            const blob = new Blob([json], { type: 'application/json' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${appState.currentExperiment}_${appState.participantId}.json`;
+            a.click();
+        }
+
+        function withdrawExperiment() {
+            if (confirm('Are you sure you want to withdraw? Your data will not be saved.')) {
+                showHome();
+            }
+        }
+
+        // Initialize
+        showScreen('homeScreen');
+    </script>
+</body>
+</html>
