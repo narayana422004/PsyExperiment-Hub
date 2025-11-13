@@ -1,0 +1,9 @@
+{
+  "name": "psyexperiment-hub",
+  "version": "2.0.0",
+  "description": "Web-based cognitive psychology experiments platform",
+  "main": "index.html",
+  "keywords": ["psychology", "cognitive-science", "experiments"],
+  "author": "Your Name",
+  "license": "MIT"
+}
