@@ -29,4 +29,19 @@ Web-based cognitive psychology experiments platform with 7 pre-built experiments
 
 ## Create Custom Experiments
 
-Click "Cre
+Click "Create Custom Experiment" to build your own!
+
+## Data & Privacy
+
+- Anonymous participant IDs
+- GDPR compliant
+- No personal data collection
+- Participants download their own data
+
+## License
+
+MIT - Free for research use
+
+---
+
+**Deploy and start collecting data today! 🚀**
