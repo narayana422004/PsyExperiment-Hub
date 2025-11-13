@@ -15,8 +15,7 @@ Web-based cognitive psychology experiments platform with 7 pre-built experiments
 
 1. Go to Settings → Pages
 2. Set source to "Deploy from a branch" → main → /
-3. Visit: https://yourusername.github.io/PsyExperiment-Hub
-
+3. Visit:https://narayana422004.github.io/PsyExperiment-Hub/
 ## Experiments
 
 - Stroop Color-Word Task (~5 min)
